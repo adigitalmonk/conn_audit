@@ -139,7 +139,7 @@ end
 There are four `:telemetry` events executed in this application.
 
 | Event | Description | Atoms | 
-| :---: | :---: | :---: | :---: | :---: |
+| :---: | :---: | :---: |
 | Audit Success | A successful audit was performed for a token | `[:conn_audit, :audit, :success]` |
 | Audit Failure | An unsuccessful audit was performed for a token | `:conn_audit, :audit, :failure]` |
 | Audit Lockout | A audit was considered "locked out" | `:conn_audit, :audit, :lockout]` |
