@@ -29,11 +29,14 @@ defmodule ConnAudit do
     Auditor.check(token)
   end
 
+  @on_reject :on_reject
+  @resolver :resolver
+
   defmacro __using__(opts) do
-    handler = Keyword.get(opts, :handler)
+    handler = Keyword.get(opts, @on_reject)
 
     resolver =
-      case Keyword.get(opts, :resolver) do
+      case Keyword.get(opts, @resolver) do
         nil -> &ConnAudit.Util.resolver/1
         resolver -> resolver
       end

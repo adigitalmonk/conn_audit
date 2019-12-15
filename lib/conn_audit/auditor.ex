@@ -41,7 +41,7 @@ defmodule ConnAudit.Auditor do
     :telemetry.execute(
       [:conn_audit, :audit, :start],
       %{token: auditor_token},
-      %{}
+      %{timestamp: DateTime.utc_now()}
     )
 
     {:ok, {auditor_token, 0}, @ttl}
@@ -50,8 +50,8 @@ defmodule ConnAudit.Auditor do
   def handle_info(:timeout, {token, attempts}) do
     :telemetry.execute(
       [:conn_audit, :audit, :timeout],
-      %{attempts: attempts},
-      %{token: token}
+      %{token: token, attempts: attempts},
+      %{timestamp: DateTime.utc_now()}
     )
 
     {:stop, :normal, @ttl}
@@ -64,8 +64,8 @@ defmodule ConnAudit.Auditor do
   def handle_call(:check, _from, {token, attempts} = state) when attempts >= @lockout do
     :telemetry.execute(
       [:conn_audit, :audit, :lockout],
-      %{attempts: attempts},
-      %{token: token}
+      %{token: token, attempts: attempts},
+      %{timestamp: DateTime.utc_now()}
     )
 
     {:reply, :fail, state, @ttl}
@@ -74,8 +74,8 @@ defmodule ConnAudit.Auditor do
   def handle_cast(:succeed, {token, attempts}) do
     :telemetry.execute(
       [:conn_audit, :audit, :success],
-      %{attempts: attempts},
-      %{token: token}
+      %{token: token, attempts: attempts},
+      %{timestamp: DateTime.utc_now()}
     )
 
     {:stop, :normal, @ttl}
@@ -86,8 +86,8 @@ defmodule ConnAudit.Auditor do
 
     :telemetry.execute(
       [:conn_audit, :audit, :failure],
-      %{attempts: new_attempts},
-      %{token: token}
+      %{token: token, attempts: new_attempts},
+      %{timestamp: DateTime.utc_now()}
     )
 
     {:noreply, {token, new_attempts}, @ttl}

@@ -15,37 +15,37 @@ defmodule Logging do
 
   def handle_event(
         [:conn_audit, :audit, :success],
-        %{attempts: attempts},
-        %{token: token},
+        %{token: token, attempts: attempts},
+        %{timestamp: timestamp},
         _config
       ) do
-    IO.inspect([:success, token, attempts])
+    IO.inspect([:success, token, attempts, timestamp])
   end
 
   def handle_event(
         [:conn_audit, :audit, :failure],
-        %{attempts: attempts},
-        %{token: token},
+        %{token: token, attempts: attempts},
+        %{timestamp: timestamp},
         _config
       ) do
-    IO.inspect([:failure, token, attempts])
+    IO.inspect([:failure, token, attempts, timestamp])
   end
 
   def handle_event(
         [:conn_audit, :audit, :timeout],
-        %{attempts: attempts},
-        %{token: token},
+        %{attempts: attempts, token: token},
+        %{timestamp: timestamp},
         _config
       ) do
-    IO.inspect([:timeout, token, attempts])
+    IO.inspect([:timeout, token, attempts, timestamp])
   end
 
   def handle_event(
         [:conn_audit, :audit, :lockout],
-        %{attempts: attempts},
-        %{token: token},
+        %{attempts: attempts, token: token},
+        %{timestamp: timestamp},
         _config
       ) do
-    IO.inspect([:lockout, token, attempts])
+    IO.inspect([:lockout, token, attempts, timestamp])
   end
 end
