@@ -80,23 +80,26 @@ defmodule ConnAudit.Auditor do
     {:stop, :normal, nil}
   end
 
-  def true_ttl(%DateTime{} = last) do
-    DateTime.add(last, @ttl, :millisecond)
-    |> DateTime.diff(DateTime.utc_now(), :millisecond)
+  def handle_continue(:adjust_ttl, %Audit{last: last} = state) do
+    adjusted_ttl =
+      DateTime.add(last, @ttl, :millisecond)
+      |> DateTime.diff(DateTime.utc_now(), :millisecond)
+
+    {:noreply, state, adjusted_ttl}
   end
 
-  def handle_call(:check, _from, %Audit{attempts: attempts, last: last} = state) when attempts < @lockout do
-    {:reply, @check_pass, state, true_ttl(last)}
+  def handle_call(:check, _from, %Audit{attempts: attempts} = state) when attempts < @lockout do
+    {:reply, @check_pass, state, {:continue, :adjust_ttl}}
   end
 
-  def handle_call(:check, _from, %Audit{token: token, attempts: attempts, last: last} = state) when attempts >= @lockout do
+  def handle_call(:check, _from, %Audit{token: token, attempts: attempts} = state) when attempts >= @lockout do
     :telemetry.execute(
       [:conn_audit, :audit, :lockout],
       %{token: token, attempts: attempts},
       %{timestamp: DateTime.utc_now()}
     )
 
-    {:reply, @check_fail, state, true_ttl(last)}
+    {:reply, @check_fail, state, {:continue, :adjust_ttl}}
   end
 
   def handle_cast(:succeed, {token, attempts}) do
