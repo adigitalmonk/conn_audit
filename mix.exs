@@ -7,7 +7,16 @@ defmodule ConnAudit.MixProject do
       version: "1.0.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+
+      # Docs
+      name: "ConnAudit",
+      source_url: "https://github.com/adigitalmonk/conn_audit",
+      homepage_url: "https://github.com/adigitalmonk/conn_audit",
+      docs: [
+        main: "ConnAudit", # The main page in the docs
+        extras: ["README.md"]
+      ]
     ]
   end
 
@@ -21,7 +30,8 @@ defmodule ConnAudit.MixProject do
   defp deps do
     [
       {:plug, "~> 1.8"},
-      {:telemetry, "~> 0.4.1"}
+      {:telemetry, "~> 0.4.1"},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
     ]
   end
 end
