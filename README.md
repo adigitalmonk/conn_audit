@@ -30,8 +30,6 @@ After the given amount of time has passed, the audit is resolved and the `GenSer
 
 ## Installation
 
-** TODO: Write this better **
-
 You can install this by adding it via Git.
 
 ```elixir
@@ -40,6 +38,12 @@ def deps do
     {:conn_audit, github: "adigitalmonk/conn_audit", branch: "master"}
   ]
 end
+```
+
+You'll also need to add `:conn_audit` to your extra applications
+
+```elixir
+  extra_applications: [:logger, :runtime_tools, :conn_audit]
 ```
 
 ## Configuration
@@ -66,7 +70,7 @@ For usage information and examples, please refer to the `ConnAudit` module docs.
 # TODO
 
 - Improve this document
-- Write moduledocs
-- Remove telemetry placeholders intended for testing
+- Revise @moduledocs and function @docs
 - Add tests
+- Remove telemetry placeholders intended for testing
 - Remove `config.exs` from local testing

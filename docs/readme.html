@@ -92,13 +92,14 @@ After the given amount of time has passed, the audit is resolved and the <a href
   Installation
 </h2>
 
-<p><strong> TODO: Write this better </strong></p>
 <p>You can install this by adding it via Git.</p>
-<pre><code class="nohighlight makeup elixir"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="3676802809-1">do</span><span class="w">
-  </span><span class="p" data-group-id="3676802809-2">[</span><span class="w">
-    </span><span class="p" data-group-id="3676802809-3">{</span><span class="ss">:conn_audit</span><span class="p">,</span><span class="w"> </span><span class="ss">github</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;adigitalmonk/conn_audit&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">branch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;master&quot;</span><span class="p" data-group-id="3676802809-3">}</span><span class="w">
-  </span><span class="p" data-group-id="3676802809-2">]</span><span class="w">
-</span><span class="k" data-group-id="3676802809-1">end</span></code></pre>
+<pre><code class="nohighlight makeup elixir"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="2876883754-1">do</span><span class="w">
+  </span><span class="p" data-group-id="2876883754-2">[</span><span class="w">
+    </span><span class="p" data-group-id="2876883754-3">{</span><span class="ss">:conn_audit</span><span class="p">,</span><span class="w"> </span><span class="ss">github</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;adigitalmonk/conn_audit&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">branch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;master&quot;</span><span class="p" data-group-id="2876883754-3">}</span><span class="w">
+  </span><span class="p" data-group-id="2876883754-2">]</span><span class="w">
+</span><span class="k" data-group-id="2876883754-1">end</span></code></pre>
+<p>You&#39;ll also need to add <code class="inline">:conn_audit</code> to your extra applications</p>
+<pre><code class="nohighlight makeup elixir"><span class="w">  </span><span class="ss">extra_applications</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0726716221-1">[</span><span class="ss">:logger</span><span class="p">,</span><span class="w"> </span><span class="ss">:runtime_tools</span><span class="p">,</span><span class="w"> </span><span class="ss">:conn_audit</span><span class="p" data-group-id="0726716221-1">]</span></code></pre>
 <h2 id="configuration" class="section-heading">
   <a href="#configuration" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
   Configuration
@@ -134,11 +135,11 @@ After the given amount of time has passed, the audit is resolved and the <a href
 <ul>
 <li>Improve this document
 </li>
-<li>Write moduledocs
-</li>
-<li>Remove telemetry placeholders intended for testing
+<li>Revise @moduledocs and function @docs
 </li>
 <li>Add tests
+</li>
+<li>Remove telemetry placeholders intended for testing
 </li>
 <li>Remove <code class="inline">config.exs</code> from local testing
 </li>
