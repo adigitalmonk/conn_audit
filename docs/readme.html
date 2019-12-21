@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.21.2">
+    <meta name="project" content="ConnAudit v1.0.0">
+    <title>ConnAudit — ConnAudit v1.0.0</title>
+    <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
+    <script src="dist/sidebar_items-8e9c0dbcc0.js"></script>
+      <script src="docs_config.js"></script>
+    <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
+  </head>
+  <body data-type="extras">
+    <script>try { if(localStorage.getItem('night-mode') === 'true') document.body.className += ' night-mode'; } catch (e) { }</script>
+<div class="main">
+
+<button class="sidebar-button sidebar-toggle">
+  <span class="icon-menu" title="Collapse/expand sidebar"></span>
+</button>
+
+<section class="sidebar">
+  <form class="sidebar-search" action="search.html">
+    <button type="submit" class="search-button">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+    <button type="button" tabindex="-1" class="search-close-button">
+      <span class="icon-cross" title="Cancel search"></span>
+    </button>
+    <label class="search-label">
+      <input name="q" type="text" id="search-list" class="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+    </label>
+  </form>
+
+  <div class="autocomplete">
+    <div class="autocomplete-results">
+    </div>
+  </div>
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectDetails">
+      <a href="https://github.com/adigitalmonk/conn_audit" class="sidebar-projectName">
+ConnAudit      </a>
+      <h2 class="sidebar-projectVersion">
+        v1.0.0
+      </h2>
+    </div>
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+
+
+  </ul>
+  <div class="gradient"></div>
+  <ul id="full-list" class="sidebar-fullList"></ul>
+</section>
+
+<section class="content">
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+
+<h1>ConnAudit</h1>
+<p>This application provides a simple implementation for login brute force protection.</p>
+<p>The two components for this are the Verification Plug macro and the Auditing API.
+You can check out the sections below for more information on each component.</p>
+<p>This application isn&#39;t meant to be a replacement for a professional solution and you&#39;d assuredly be better suited using something tried, true, and production ready.
+I wrote this originally for a small personal project as a form of basic security and had fun doing it.</p>
+<p>I decided to rewrite it into it&#39;s own module as a way to get more experience in Elixir; writing a <a href="https://hexdocs.pm/elixir/DynamicSupervisor.html"><code class="inline">DynamicSupervisor</code></a>, macro, unit tests, module docs, and whatever else is required.</p>
+<p>The way the system works is to place a Plug built using the <a href="ConnAudit.html"><code class="inline">ConnAudit</code></a> macro in front of your login page.
+The macro accepts a handler for what to do if the &quot;verification&quot; fails, otherwise it will just pass the <a href="https://hexdocs.pm/plug/1.8.3/Plug.Conn.html"><code class="inline">Plug.Conn</code></a> through to the next plug.</p>
+<p>The module <a href="ConnAudit.html"><code class="inline">ConnAudit</code></a> also exposes three functions:</p>
+<ul>
+<li><code class="inline">fail/1</code>
+</li>
+<li><code class="inline">succeed/1</code>
+</li>
+<li><code class="inline">check/1</code>
+</li>
+</ul>
+<p>For more information, refer to the module docs for <a href="ConnAudit.html"><code class="inline">ConnAudit</code></a>.</p>
+<p>Behind the scenes, for every unique verification token that is passed into the system, a dynamic <a href="https://hexdocs.pm/elixir/GenServer.html"><code class="inline">GenServer</code></a> will spin up named by the unique verification token.</p>
+<p>The <a href="https://hexdocs.pm/elixir/GenServer.html"><code class="inline">GenServer</code></a> will keep track of the number of times the <code class="inline">fail/1</code> function has been called.
+A call to <code class="inline">succeed/1</code> will cause the <a href="https://hexdocs.pm/elixir/GenServer.html"><code class="inline">GenServer</code></a> to terminate, resetting the audit process.
+The configured <code class="inline">:ttl</code> (time to live) will determine how long an &quot;audit&quot; stays open.
+After the given amount of time has passed, the audit is resolved and the <a href="https://hexdocs.pm/elixir/GenServer.html"><code class="inline">GenServer</code></a> tracking the state terminates.</p>
+<h2 id="installation" class="section-heading">
+  <a href="#installation" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Installation
+</h2>
+
+<p><strong> TODO: Write this better </strong></p>
+<p>You can install this by adding it via Git.</p>
+<pre><code class="nohighlight makeup elixir"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="3676802809-1">do</span><span class="w">
+  </span><span class="p" data-group-id="3676802809-2">[</span><span class="w">
+    </span><span class="p" data-group-id="3676802809-3">{</span><span class="ss">:conn_audit</span><span class="p">,</span><span class="w"> </span><span class="ss">github</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;adigitalmonk/conn_audit&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">branch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;master&quot;</span><span class="p" data-group-id="3676802809-3">}</span><span class="w">
+  </span><span class="p" data-group-id="3676802809-2">]</span><span class="w">
+</span><span class="k" data-group-id="3676802809-1">end</span></code></pre>
+<h2 id="configuration" class="section-heading">
+  <a href="#configuration" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Configuration
+</h2>
+
+<p>There are two settings for the application.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left">Option</th><th style="text-align: center">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left"><code class="inline">:ttl</code></td><td style="text-align: center">The amount of time (in milliseconds) to maintain an audit.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code class="inline">:lockout</code></td><td style="text-align: center">The number of failures before an audit fails.</td>
+</tr>
+</tbody>
+</table>
+<p>Example for your <code class="inline">config.exs</code>.</p>
+<pre><code class="nohighlight makeup elixir"><span class="n">config</span><span class="w"> </span><span class="ss">:conn_audit</span><span class="p">,</span><span class="w"> </span><span class="nc">Auditing</span><span class="p">,</span><span class="w">
+  </span><span class="ss">ttl</span><span class="p">:</span><span class="w"> </span><span class="mi">300000</span><span class="p">,</span><span class="w">
+  </span><span class="ss">lockout</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span></code></pre>
+<h2 id="usage" class="section-heading">
+  <a href="#usage" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Usage
+</h2>
+
+<p>For usage information and examples, please refer to the <a href="ConnAudit.html"><code class="inline">ConnAudit</code></a> module docs.</p>
+<h1>TODO</h1>
+<ul>
+<li>Improve this document
+</li>
+<li>Write moduledocs
+</li>
+<li>Remove telemetry placeholders intended for testing
+</li>
+<li>Add tests
+</li>
+<li>Remove <code class="inline">config.exs</code> from local testing
+</li>
+</ul>
+      <footer class="footer">
+        <p>
+          <span class="line">
+            Built using
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.21.2),
+          </span>
+          <span class="line">
+            designed by
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+        </p>
+        <p>
+          <button class="line footer-button night-mode-toggle">
+            Toggle night mode
+          </button>
+          <button class="line footer-button tooltips-toggle">
+            <span class="tooltips-option-disable">Disable tooltips</span>
+            <span class="tooltips-option-enable">Enable tooltips</span>
+          </button>
+          <button class="line footer-button display-shortcuts-help">
+            Display keyboard shortcuts
+          </button>
+          <button class="line footer-button display-quick-switch">
+            Go to a HexDocs package
+          </button>
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+</div>
+  </body>
+</html>

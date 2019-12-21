@@ -15,7 +15,8 @@ defmodule ConnAudit.MixProject do
       homepage_url: "https://github.com/adigitalmonk/conn_audit",
       docs: [
         main: "ConnAudit",
-        extras: ["README.md"]
+        extras: ["README.md"],
+        output: "docs"
       ]
     ]
   end

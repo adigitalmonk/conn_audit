@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.21.2">
+    <meta name="project" content="ConnAudit v1.0.0">
+    <title>ConnAudit — ConnAudit v1.0.0</title>
+    <link rel="stylesheet" href="dist/html-de2388dc2f8074b0a4db.css" />
+    <script src="dist/sidebar_items-8e9c0dbcc0.js"></script>
+      <script src="docs_config.js"></script>
+    <script async src="dist/html-de2388dc2f8074b0a4db.js"></script>
+  </head>
+  <body data-type="modules">
+    <script>try { if(localStorage.getItem('night-mode') === 'true') document.body.className += ' night-mode'; } catch (e) { }</script>
+<div class="main">
+
+<button class="sidebar-button sidebar-toggle">
+  <span class="icon-menu" title="Collapse/expand sidebar"></span>
+</button>
+
+<section class="sidebar">
+  <form class="sidebar-search" action="search.html">
+    <button type="submit" class="search-button">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+    <button type="button" tabindex="-1" class="search-close-button">
+      <span class="icon-cross" title="Cancel search"></span>
+    </button>
+    <label class="search-label">
+      <input name="q" type="text" id="search-list" class="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+    </label>
+  </form>
+
+  <div class="autocomplete">
+    <div class="autocomplete-results">
+    </div>
+  </div>
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectDetails">
+      <a href="https://github.com/adigitalmonk/conn_audit" class="sidebar-projectName">
+ConnAudit      </a>
+      <h2 class="sidebar-projectVersion">
+        v1.0.0
+      </h2>
+    </div>
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+
+
+  </ul>
+  <div class="gradient"></div>
+  <ul id="full-list" class="sidebar-fullList"></ul>
+</section>
+
+<section class="content">
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+
+      <h1>
+        <small class="app-vsn">ConnAudit v1.0.0</small>
+ConnAudit          <a href="https://github.com/adigitalmonk/conn_audit/blob/master/lib/conn_audit.ex#L1" title="View Source" class="view-source" rel="help">
+            <span class="icon-code" aria-hidden="true"></span>
+            <span class="sr-only">View Source</span>
+          </a>
+      </h1>
+
+
+        <section id="moduledoc">
+<p>This application provides a simple implementation for login brute force protection.</p>
+<p>The two components for this are the Verification Plug macro and the Auditing API.
+You can check out the sections below for more information on each component.</p>
+<p>This application isn&#39;t meant to be a replacement for a <em>real</em> solution and you&#39;d assuredly be better suited using something production-ready.</p>
+<p>The way the system works is to place a <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> built using the <a href="#content"><code class="inline">ConnAudit</code></a> macro in front of your login page.
+The macro accepts a handler for what to do if the &quot;verification&quot; fails, otherwise it will just pass the <a href="https://hexdocs.pm/plug/1.8.3/Plug.Conn.html"><code class="inline">Plug.Conn</code></a> through to the next plug.</p>
+<h4>Verification Plug</h4>
+<p>The verification plug macro will create a plug <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> for you that will check the result of an audit.</p>
+<p>If the audit passes, it will forward the <code class="inline">conn</code> on.
+If it fails, it will pass the <code class="inline">conn</code> into the function that&#39;s passed in.</p>
+<pre><code class="nohighlight makeup elixir"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">AuditTest.Plug.Verify</span><span class="w"> </span><span class="k" data-group-id="4459035411-1">do</span><span class="w">
+  </span><span class="kn">use</span><span class="w"> </span><span class="nc">ConnAudit</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Phoenix.Controller</span><span class="p">,</span><span class="w"> </span><span class="ss">only</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4459035411-2">[</span><span class="ss">redirect</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4459035411-2">]</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">on_reject</span><span class="p" data-group-id="4459035411-3">(</span><span class="n">conn</span><span class="p" data-group-id="4459035411-3">)</span><span class="w"> </span><span class="k" data-group-id="4459035411-4">do</span><span class="w">
+    </span><span class="n">conn</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">redirect</span><span class="p" data-group-id="4459035411-5">(</span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/403&quot;</span><span class="p" data-group-id="4459035411-5">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">halt</span><span class="p" data-group-id="4459035411-6">(</span><span class="p" data-group-id="4459035411-6">)</span><span class="w">
+  </span><span class="k" data-group-id="4459035411-4">end</span><span class="w">
+</span><span class="k" data-group-id="4459035411-1">end</span></code></pre>
+<p>The <code class="inline">use ConnAudit</code> macro requires your plug to implement the <code class="inline">on_reject</code> function.
+This function takes a <a href="https://hexdocs.pm/plug/1.8.3/Plug.Conn.html"><code class="inline">Plug.Conn</code></a> and returns a <a href="https://hexdocs.pm/plug/1.8.3/Plug.Conn.html"><code class="inline">Plug.Conn</code></a>.
+This allows you to define how yo want to handle a failed audit.</p>
+<p>Then just add this <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> into your pipeline or attach it whatever routes you want auditing on.
+This <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> will create a new <a href="https://hexdocs.pm/elixir/GenServer.html"><code class="inline">GenServer</code></a> for every unique token passed to the Audit API.
+I&#39;d recommend limiting the number of routes you apply this to.</p>
+<pre><code class="nohighlight makeup elixir"><span class="w">  </span><span class="n">pipeline</span><span class="w"> </span><span class="ss">:audited</span><span class="w"> </span><span class="k" data-group-id="8000143364-1">do</span><span class="w">
+    </span><span class="n">plug</span><span class="w"> </span><span class="nc">AuditTest.Plug.Verify</span><span class="w">
+  </span><span class="k" data-group-id="8000143364-1">end</span><span class="w">
+
+  </span><span class="n">scope</span><span class="w"> </span><span class="s">&quot;/login&quot;</span><span class="p">,</span><span class="w"> </span><span class="nc">AuditTestingWeb</span><span class="w"> </span><span class="k" data-group-id="8000143364-2">do</span><span class="w">
+    </span><span class="n">pipe_through</span><span class="w"> </span><span class="p" data-group-id="8000143364-3">[</span><span class="ss">:browser</span><span class="p">,</span><span class="w"> </span><span class="ss">:audited</span><span class="p" data-group-id="8000143364-3">]</span><span class="w">
+    </span><span class="n">get</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p">,</span><span class="w"> </span><span class="nc">LoginController</span><span class="p">,</span><span class="w"> </span><span class="ss">:index</span><span class="w">
+  </span><span class="k" data-group-id="8000143364-2">end</span></code></pre>
+<p>You&#39;d be better off relying on sessions to isolate the majority of your pages and having this <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> only on your actual login page.
+That said, it can be used for any kind of auditing purposes to block access to specific pages, nothing says it has to be used for login controls.</p>
+<p>The resolution of the <a href="https://hexdocs.pm/plug/1.8.3/Plug.Conn.html"><code class="inline">Plug.Conn</code></a> is implemented through a Protocol.
+You are welcome to re-implement the existing protocol how you deem fit.
+You could alternatively write an entirely new one and create your own verification plug.</p>
+<p>The existing one is as follows.</p>
+<pre><code class="nohighlight makeup elixir"><span class="kd">defimpl</span><span class="w"> </span><span class="nc">ConnAudit.Resolvable</span><span class="p">,</span><span class="w"> </span><span class="ss">for</span><span class="p">:</span><span class="w"> </span><span class="nc">Plug.Conn</span><span class="w"> </span><span class="k" data-group-id="3907949128-1">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p" data-group-id="3907949128-2">(</span><span class="p" data-group-id="3907949128-3">%</span><span class="nc" data-group-id="3907949128-3">Plug.Conn</span><span class="p" data-group-id="3907949128-3">{</span><span class="ss">remote_ip</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3907949128-4">{</span><span class="n">oct1</span><span class="p">,</span><span class="w"> </span><span class="n">oct2</span><span class="p">,</span><span class="w"> </span><span class="n">oct3</span><span class="p">,</span><span class="w"> </span><span class="n">oct4</span><span class="p" data-group-id="3907949128-4">}</span><span class="p" data-group-id="3907949128-3">}</span><span class="p" data-group-id="3907949128-2">)</span><span class="w"> </span><span class="k" data-group-id="3907949128-5">do</span><span class="w">
+    </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="3907949128-6">(</span><span class="n">oct1</span><span class="p" data-group-id="3907949128-6">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w">
+    </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="3907949128-7">(</span><span class="n">oct2</span><span class="p" data-group-id="3907949128-7">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w">
+    </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="3907949128-8">(</span><span class="n">oct3</span><span class="p" data-group-id="3907949128-8">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w">
+    </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="3907949128-9">(</span><span class="n">oct4</span><span class="p" data-group-id="3907949128-9">)</span><span class="w">
+  </span><span class="k" data-group-id="3907949128-5">end</span><span class="w">
+</span><span class="k" data-group-id="3907949128-1">end</span></code></pre>
+<h4>Auditing API</h4>
+<p>There are three functions as part of the auditing API.</p>
+<p><strong>TODO - Define three functions</strong>
+<strong>TODO - How the tokens work + resolution</strong></p>
+<pre><code class="nohighlight makeup elixir"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">AuditTestWeb.LoginController</span><span class="w"> </span><span class="k" data-group-id="9954986023-1">do</span><span class="w">
+
+  </span><span class="c1"># Plug only on this page instead of in pipeline</span><span class="w">
+  </span><span class="n">plug</span><span class="w"> </span><span class="nc">AuditTest.Plug.Verify</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">create</span><span class="p" data-group-id="9954986023-2">(</span><span class="n">conn</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9954986023-3">%{</span><span class="w">
+        </span><span class="s">&quot;login_form&quot;</span><span class="w"> </span><span class="o">=</span><span class="o">&gt;</span><span class="w"> </span><span class="p" data-group-id="9954986023-4">%{</span><span class="w">
+          </span><span class="s">&quot;username&quot;</span><span class="w"> </span><span class="o">=</span><span class="o">&gt;</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w">
+          </span><span class="s">&quot;password&quot;</span><span class="w"> </span><span class="o">=</span><span class="o">&gt;</span><span class="w"> </span><span class="n">password</span><span class="w">
+        </span><span class="p" data-group-id="9954986023-4">}</span><span class="w">
+      </span><span class="p" data-group-id="9954986023-3">}</span><span class="p" data-group-id="9954986023-2">)</span><span class="w"> </span><span class="k" data-group-id="9954986023-5">do</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="nc">Accounts</span><span class="o">.</span><span class="n">login</span><span class="p" data-group-id="9954986023-6">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p" data-group-id="9954986023-6">)</span><span class="w"> </span><span class="k" data-group-id="9954986023-7">do</span><span class="w">
+      </span><span class="nc">ConnAudit</span><span class="o">.</span><span class="n">succeed</span><span class="p" data-group-id="9954986023-8">(</span><span class="n">conn</span><span class="p" data-group-id="9954986023-8">)</span><span class="w">
+
+      </span><span class="n">conn</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">put_session</span><span class="p" data-group-id="9954986023-9">(</span><span class="ss">:authenticated</span><span class="p">,</span><span class="w"> </span><span class="n">username</span><span class="p" data-group-id="9954986023-9">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">redirect</span><span class="p" data-group-id="9954986023-10">(</span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p" data-group-id="9954986023-10">)</span><span class="w">
+    </span><span class="k" data-group-id="9954986023-7">else</span><span class="w">
+      </span><span class="nc">ConnAudit</span><span class="o">.</span><span class="n">fail</span><span class="p" data-group-id="9954986023-11">(</span><span class="n">conn</span><span class="p" data-group-id="9954986023-11">)</span><span class="w">
+
+      </span><span class="n">conn</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">put_flash</span><span class="p" data-group-id="9954986023-12">(</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Invalid username or password.&quot;</span><span class="p" data-group-id="9954986023-12">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">redirect</span><span class="p" data-group-id="9954986023-13">(</span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/auth/login&quot;</span><span class="p" data-group-id="9954986023-13">)</span><span class="w">
+    </span><span class="k" data-group-id="9954986023-7">end</span><span class="w">
+  </span><span class="k" data-group-id="9954986023-5">end</span><span class="w">
+</span><span class="k" data-group-id="9954986023-1">end</span></code></pre>
+<h2 id="module-logging" class="section-heading">
+  <a href="#module-logging" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Logging
+</h2>
+
+<p>There are four <code class="inline">:telemetry</code> events executed in this application.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center">Event</th><th style="text-align: center">Description</th><th style="text-align: center">Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center">Audit Success</td><td style="text-align: center">A successful audit was performed for a token</td><td style="text-align: center"><code class="inline">[:conn_audit, :audit, :success]</code></td>
+</tr>
+<tr>
+<td style="text-align: center">Audit Failure</td><td style="text-align: center">An unsuccessful audit was performed for a token</td><td style="text-align: center"><code class="inline">[:conn_audit, :audit, :failure]</code></td>
+</tr>
+<tr>
+<td style="text-align: center">Audit Lockout</td><td style="text-align: center">A audit was considered &quot;locked out&quot;</td><td style="text-align: center"><code class="inline">[:conn_audit, :audit, :lockout]</code></td>
+</tr>
+<tr>
+<td style="text-align: center">Audit Timeout</td><td style="text-align: center">The configured <code class="inline">:ttl</code> has passed and an audit is no longer valid</td><td style="text-align: center"><code class="inline">[:conn_audit, :audit, :timeout]</code></td>
+</tr>
+</tbody>
+</table>
+<p>All of the events have the same parameters and metadata.</p>
+<h3 id="module-parameters" class="section-heading">
+  <a href="#module-parameters" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Parameters
+</h3>
+
+<ul>
+<li><code class="inline">attempts</code> is the number of failed attempts that happened up to that point
+</li>
+<li><code class="inline">token</code> is the resolved token for the connection / user
+</li>
+</ul>
+<h3 id="module-metadata" class="section-heading">
+  <a href="#module-metadata" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Metadata
+</h3>
+
+<ul>
+<li><code class="inline">timestamp</code> is a UTC <a href="https://hexdocs.pm/elixir/DateTime.html"><code class="inline">DateTime</code></a>
+</li>
+</ul>
+        </section>
+
+        <section id="summary" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#summary">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+            Summary
+          </h1>
+  <div class="summary-functions summary">
+    <h2>
+      <a href="#functions">Functions</a>
+    </h2>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#__using__/1">__using__(opts)</a>
+  </div>
+    <div class="summary-synopsis"><p>This will create the necessary code for a <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> to be used in a <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> pipeline or individual <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> controller.</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#check/1">check(token)</a>
+  </div>
+    <div class="summary-synopsis"><p>Accepts an identifier and will return the current audit status.
+The audit status will either be :pass if the identifier accepted or or :lockout if denied.</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#fail/1">fail(token)</a>
+  </div>
+    <div class="summary-synopsis"><p>Accepts an identifier and will mark a failed audit.</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#succeed/1">succeed(token)</a>
+  </div>
+    <div class="summary-synopsis"><p>Accepts an identifier and will mark a successful audit.</p></div>
+</div>
+  </div>
+        </section>
+
+        <section id="functions" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#functions">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+Functions          </h1>
+          <div class="functions-list">
+<section class="detail" id="__using__/1">
+  <div class="detail-header">
+    <a href="#__using__/1" class="detail-link" title="Link to this macro">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this macro</span>
+    </a>
+    <h1 class="signature">__using__(opts)</h1>
+      <a href="https://github.com/adigitalmonk/conn_audit/blob/master/lib/conn_audit.ex#L182" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+      <span class="note">(macro)</span>
+  </div>
+  <section class="docstring">
+<p>This will create the necessary code for a <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> to be used in a <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> pipeline or individual <a href="https://hexdocs.pm/plug/1.8.3/Plug.html"><code class="inline">Plug</code></a> controller.</p>
+<p>The see <a href="#content"><code class="inline">ConnAudit</code></a> module description for more information.</p>
+  </section>
+</section>
+<section class="detail" id="check/1">
+  <div class="detail-header">
+    <a href="#check/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">check(token)</h1>
+      <a href="https://github.com/adigitalmonk/conn_audit/blob/master/lib/conn_audit.ex#L168" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+  </div>
+  <section class="docstring">
+<p>Accepts an identifier and will return the current audit status.
+The audit status will either be :pass if the identifier accepted or or :lockout if denied.</p>
+<p>This can accept a binary or a struct that implements the <a href="ConnAudit.Resolvable.html"><code class="inline">ConnAudit.Resolvable</code></a> protocol.</p>
+  </section>
+</section>
+<section class="detail" id="fail/1">
+  <div class="detail-header">
+    <a href="#fail/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">fail(token)</h1>
+      <a href="https://github.com/adigitalmonk/conn_audit/blob/master/lib/conn_audit.ex#L139" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+  </div>
+  <section class="docstring">
+<p>Accepts an identifier and will mark a failed audit.</p>
+<p>This can accept a binary or a struct that implements the <a href="ConnAudit.Resolvable.html"><code class="inline">ConnAudit.Resolvable</code></a> protocol.</p>
+  </section>
+</section>
+<section class="detail" id="succeed/1">
+  <div class="detail-header">
+    <a href="#succeed/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">succeed(token)</h1>
+      <a href="https://github.com/adigitalmonk/conn_audit/blob/master/lib/conn_audit.ex#L153" class="view-source" rel="help" title="View Source">
+       <span class="icon-code" aria-hidden="true"></span>
+       <span class="sr-only">View Source</span>
+     </a>
+  </div>
+  <section class="docstring">
+<p>Accepts an identifier and will mark a successful audit.</p>
+<p>This can accept a binary or a struct that implements the <a href="ConnAudit.Resolvable.html"><code class="inline">ConnAudit.Resolvable</code></a> protocol.</p>
+  </section>
+</section>
+          </div>
+        </section>
+      <footer class="footer">
+        <p>
+          <span class="line">
+            Built using
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.21.2),
+          </span>
+          <span class="line">
+            designed by
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+        </p>
+        <p>
+          <button class="line footer-button night-mode-toggle">
+            Toggle night mode
+          </button>
+          <button class="line footer-button tooltips-toggle">
+            <span class="tooltips-option-disable">Disable tooltips</span>
+            <span class="tooltips-option-enable">Enable tooltips</span>
+          </button>
+          <button class="line footer-button display-shortcuts-help">
+            Display keyboard shortcuts
+          </button>
+          <button class="line footer-button display-quick-switch">
+            Go to a HexDocs package
+          </button>
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+</div>
+  </body>
+</html>

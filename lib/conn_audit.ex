@@ -19,10 +19,10 @@ defmodule ConnAudit do
 
   ```elixir
   defmodule AuditTest.Plug.Verify do
-    use ConnAudit, on_reject: &handler/1
+    use ConnAudit
     import Phoenix.Controller, only: [redirect: 2]
 
-    def handler(conn) do
+    def on_reject(conn) do
       conn
       |> redirect(to: "/403")
       |> halt()
@@ -30,8 +30,9 @@ defmodule ConnAudit do
   end
   ```
 
-  When you `use ConnAudit`, you'll need to provide a callback for the Plug to know what to do in the event of a failure.
-  This is passed in via the `:on_reject` parameter.
+  The `use ConnAudit` macro requires your plug to implement the `on_reject` function.
+  This function takes a `Plug.Conn` and returns a `Plug.Conn`.
+  This allows you to define how yo want to handle a failed audit.
 
   Then just add this `Plug` into your pipeline or attach it whatever routes you want auditing on.
   This `Plug` will create a new `GenServer` for every unique token passed to the Audit API.
@@ -178,12 +179,11 @@ defmodule ConnAudit do
 
   The see `ConnAudit` module description for more information.
   """
-  defmacro __using__(opts) do
-    handler = Keyword.get(opts, :on_reject)
-
+  defmacro __using__(_opts) do
     quote do
       import Plug.Conn
       import ConnAudit.Resolvable
+      @behaviour ConnAudit.Plug
 
       def init(opts), do: opts
 
@@ -195,7 +195,7 @@ defmodule ConnAudit do
             conn
 
           _ ->
-            unquote(handler).(conn)
+            on_reject(conn)
         end
       end
     end
