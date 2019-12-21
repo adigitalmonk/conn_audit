@@ -14,7 +14,7 @@ defmodule ConnAudit.MixProject do
       source_url: "https://github.com/adigitalmonk/conn_audit",
       homepage_url: "https://github.com/adigitalmonk/conn_audit",
       docs: [
-        main: "ConnAudit", # The main page in the docs
+        main: "ConnAudit",
         extras: ["README.md"]
       ]
     ]
@@ -31,7 +31,7 @@ defmodule ConnAudit.MixProject do
     [
       {:plug, "~> 1.8"},
       {:telemetry, "~> 0.4.1"},
-      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false}
     ]
   end
 end

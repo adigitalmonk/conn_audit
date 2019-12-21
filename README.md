@@ -66,7 +66,6 @@ For usage information and examples, please refer to the `ConnAudit` module docs.
 # TODO
 
 - Improve this document
-- Simplify `resolver` configuration for Auditing API
 - Write moduledocs
 - Remove telemetry placeholders intended for testing
 - Add tests

@@ -1,5 +1,4 @@
 defmodule ConnAudit.Auditor do
-
   @moduledoc false
 
   use GenServer, restart: :transient
@@ -13,6 +12,7 @@ defmodule ConnAudit.Auditor do
   @check_pass :pass
   @check_fail :fail
 
+  @doc false
   def start_link(audit_token) do
     GenServer.start_link(
       __MODULE__,
@@ -21,10 +21,12 @@ defmodule ConnAudit.Auditor do
     )
   end
 
+  @doc false
   def start_auditor(audit_token) do
     DynamicSupervisor.start_child(ConnAudit.DynamicSupervisor, {__MODULE__, audit_token})
   end
 
+  @doc false
   defp name_via_registry(audit_token) do
     case registered(audit_token) do
       [] ->
@@ -36,26 +38,32 @@ defmodule ConnAudit.Auditor do
     end
   end
 
+  @doc false
   defp registered(audit_token) do
     Registry.lookup(AuditRegistry, audit_token)
   end
 
-  # ## Client API
+  ## Client API
+  @doc false
   def check(audit_token) do
     case registered(audit_token) do
       [] ->
         @check_pass
+
       _ ->
         name_via_registry(audit_token)
         |> GenServer.call(:check)
     end
   end
 
+  @doc false
   def fail(audit_token), do: name_via_registry(audit_token) |> GenServer.cast(:fail)
 
+  @doc false
   def succeed(audit_token), do: name_via_registry(audit_token) |> GenServer.cast(:succeed)
 
-  # ## Internal API
+  ## Internal API
+  @doc false
   def init({:ok, auditor_token}) do
     :telemetry.execute(
       [:conn_audit, :audit, :start],
@@ -63,13 +71,15 @@ defmodule ConnAudit.Auditor do
       %{timestamp: DateTime.utc_now()}
     )
 
-    {:ok, %Audit{
-      token: auditor_token,
-      attempts: 0,
-      last: nil
-    }, @ttl}
+    {:ok,
+     %Audit{
+       token: auditor_token,
+       attempts: 0,
+       last: nil
+     }, @ttl}
   end
 
+  @doc false
   def handle_info(:timeout, %Audit{token: token, attempts: attempts}) do
     :telemetry.execute(
       [:conn_audit, :audit, :timeout],
@@ -80,6 +90,7 @@ defmodule ConnAudit.Auditor do
     {:stop, :normal, nil}
   end
 
+  @doc false
   def handle_continue(:adjust_ttl, %Audit{last: last} = state) do
     adjusted_ttl =
       DateTime.add(last, @ttl, :millisecond)
@@ -88,11 +99,14 @@ defmodule ConnAudit.Auditor do
     {:noreply, state, adjusted_ttl}
   end
 
+  @doc false
   def handle_call(:check, _from, %Audit{attempts: attempts} = state) when attempts < @lockout do
     {:reply, @check_pass, state, {:continue, :adjust_ttl}}
   end
 
-  def handle_call(:check, _from, %Audit{token: token, attempts: attempts} = state) when attempts >= @lockout do
+  @doc false
+  def handle_call(:check, _from, %Audit{token: token, attempts: attempts} = state)
+      when attempts >= @lockout do
     :telemetry.execute(
       [:conn_audit, :audit, :lockout],
       %{token: token, attempts: attempts},
@@ -102,6 +116,7 @@ defmodule ConnAudit.Auditor do
     {:reply, @check_fail, state, {:continue, :adjust_ttl}}
   end
 
+  @doc false
   def handle_cast(:succeed, {token, attempts}) do
     :telemetry.execute(
       [:conn_audit, :audit, :success],
@@ -112,6 +127,7 @@ defmodule ConnAudit.Auditor do
     {:stop, :normal, @ttl}
   end
 
+  @doc false
   def handle_cast(:fail, %Audit{token: token, attempts: attempts}) do
     new_attempts = attempts + 1
 
@@ -121,10 +137,11 @@ defmodule ConnAudit.Auditor do
       %{timestamp: DateTime.utc_now()}
     )
 
-    {:noreply, %Audit{
-      token: token,
-      attempts: new_attempts,
-      last: DateTime.utc_now()
-    }, @ttl}
+    {:noreply,
+     %Audit{
+       token: token,
+       attempts: new_attempts,
+       last: DateTime.utc_now()
+     }, @ttl}
   end
 end

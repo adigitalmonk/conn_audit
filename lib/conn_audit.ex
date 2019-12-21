@@ -30,14 +30,8 @@ defmodule ConnAudit do
   end
   ```
 
-  When you `use ConnAudit`, there are two options that can be passed in.
-
-  The first option, `:on_reject`, is the function that is used to handle the `conn` when an audit false.
-
-  The (optional) second option, `:resolver`, is used to convert a `conn` into a uniquely identifiable string for auditing purposes.
-  By default, this resolution is performed by taking the `host_ip` from the connection and converting it into a string.
-  E.g., `{127, 0, 0, 1}` -> `"127.0.0.1"`
-  If you choose to override this, you can do whatever you want but the token returned by the resolver **must** be a `binary`.
+  When you `use ConnAudit`, you'll need to provide a callback for the Plug to know what to do in the event of a failure.
+  This is passed in via the `:on_reject` parameter.
 
   Then just add this `Plug` into your pipeline or attach it whatever routes you want auditing on.
   This `Plug` will create a new `GenServer` for every unique token passed to the Audit API.
@@ -56,6 +50,23 @@ defmodule ConnAudit do
 
   You'd be better off relying on sessions to isolate the majority of your pages and having this `Plug` only on your actual login page.
   That said, it can be used for any kind of auditing purposes to block access to specific pages, nothing says it has to be used for login controls.
+
+  The resolution of the `Plug.Conn` is implemented through a Protocol.
+  You are welcome to re-implement the existing protocol how you deem fit.
+  You could alternatively write an entirely new one and create your own verification plug.
+
+  The existing one is as follows.
+
+  ```elixir
+  defimpl ConnAudit.Resolvable, for: Plug.Conn do
+    def resolve(%Plug.Conn{remote_ip: {oct1, oct2, oct3, oct4}}) do
+      Integer.to_string(oct1) <> "." <>
+      Integer.to_string(oct2) <> "." <>
+      Integer.to_string(oct3) <> "." <>
+      Integer.to_string(oct4)
+    end
+  end
+  ```
 
   #### Auditing API
 
@@ -114,56 +125,52 @@ defmodule ConnAudit do
   ### Metadata
 
   - `timestamp` is a UTC `DateTime`
-
   """
 
-  alias ConnAudit.Util
   alias ConnAudit.Auditor
+  import ConnAudit.Resolvable
 
   @doc """
   Accepts an identifier and will mark a failed audit.
 
-  This can accept either `Plug.Conn` or a pre-resolved binary.
-  If providing a `Plug.Conn`, it will resolve it using the default resolver `ConnAudit.Util.resolver/1`
+  This can accept a binary or a struct that implements the `ConnAudit.Resolvable` protocol.
   """
-  def fail(%Plug.Conn{} = conn) do
-    Util.resolver(conn)
-    |> fail()
-  end
-
   def fail(token) when is_binary(token) do
     Auditor.fail(token)
   end
 
-@doc """
-  Accepts an identifier and will mark a successful audit.
-
-  This can accept either `Plug.Conn` or a pre-resolved binary.
-  If providing a `Plug.Conn`, it will resolve it using the default resolver `ConnAudit.Util.resolver/1`
-  """
-  def succeed(%Plug.Conn{} = conn) do
-    Util.resolver(conn)
-    |> succeed()
+  def fail(resolvable) do
+    resolve(resolvable)
+    |> fail()
   end
 
+  @doc """
+  Accepts an identifier and will mark a successful audit.
+
+  This can accept a binary or a struct that implements the `ConnAudit.Resolvable` protocol.
+  """
   def succeed(token) when is_binary(token) do
     Auditor.succeed(token)
+  end
+
+  def succeed(resolvable) do
+    resolve(resolvable)
+    |> succeed()
   end
 
   @doc """
   Accepts an identifier and will return the current audit status.
   The audit status will either be :pass if the identifier accepted or or :lockout if denied.
 
-  This can accept either `Plug.Conn` or a pre-resolved binary.
-  If providing a `Plug.Conn`, it will resolve it using the default resolver `ConnAudit.Util.resolver/1`
+  This can accept a binary or a struct that implements the `ConnAudit.Resolvable` protocol.
   """
-  def check(%Plug.Conn{} = conn) do
-    Util.resolver(conn)
-    |> check()
-  end
-
   def check(token) when is_binary(token) do
     Auditor.check(token)
+  end
+
+  def check(resolvable) do
+    resolve(resolvable)
+    |> check()
   end
 
   @doc """
@@ -174,19 +181,14 @@ defmodule ConnAudit do
   defmacro __using__(opts) do
     handler = Keyword.get(opts, :on_reject)
 
-    resolver =
-      case Keyword.get(opts, :resolver) do
-        nil -> &ConnAudit.Util.resolver/1
-        resolver -> resolver
-      end
-
     quote do
       import Plug.Conn
+      import ConnAudit.Resolvable
 
       def init(opts), do: opts
 
       def call(conn, _opts) do
-        token = unquote(resolver).(conn)
+        token = resolve(conn)
 
         case ConnAudit.check(token) do
           :pass ->
