@@ -1,4 +1,4 @@
-defmodule ConnAudit do
+defmodule ConnAudit.Auditor do
   @moduledoc """
   This application provides a simple implementation for login brute force protection.
 
@@ -128,7 +128,7 @@ defmodule ConnAudit do
   - `timestamp` is a UTC `DateTime`
   """
 
-  alias ConnAudit.Auditor
+  alias ConnAudit.Auditing.Auditor
   import ConnAudit.Resolvable
 
   @doc """

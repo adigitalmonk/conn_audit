@@ -5,12 +5,13 @@ defmodule ConnAudit.Application do
 
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: ConnAudit.AuditRegistry},
+      {Registry, keys: :unique, name: ConnAudit.Auditing.Registry},
+      {Registry, keys: :unique, name: ConnAudit.Limiting.Registry},
       {DynamicSupervisor, strategy: :one_for_one, name: ConnAudit.DynamicSupervisor}
     ]
 
     # TODO: Remove this
-    Logging.attach_loggers()
+    # Logging.attach_loggers()
 
     opts = [strategy: :one_for_one, name: ConnAudit.Supervisor]
     Supervisor.start_link(children, opts)
