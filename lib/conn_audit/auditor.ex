@@ -117,7 +117,7 @@ defmodule ConnAudit.Auditor do
   end
 
   @doc false
-  def handle_cast(:succeed, {token, attempts}) do
+  def handle_cast(:succeed, %Audit{token: token, attempts: attempts}) do
     :telemetry.execute(
       [:conn_audit, :audit, :success],
       %{token: token, attempts: attempts},

@@ -10,7 +10,7 @@ defmodule ConnAudit.Application do
     ]
 
     # TODO: Remove this
-    Logging.attach_loggers()
+    # Logging.attach_loggers()
 
     opts = [strategy: :one_for_one, name: ConnAudit.Supervisor]
     Supervisor.start_link(children, opts)
