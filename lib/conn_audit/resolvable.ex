@@ -16,13 +16,9 @@ end
 
 defimpl ConnAudit.Resolvable, for: Plug.Conn do
   @spec resolve(Plug.Conn.t()) :: binary
-  def resolve(%Plug.Conn{remote_ip: {oct1, oct2, oct3, oct4}}) do
-    Integer.to_string(oct1) <>
-      "." <>
-      Integer.to_string(oct2) <>
-      "." <>
-      Integer.to_string(oct3) <>
-      "." <>
-      Integer.to_string(oct4)
+  def resolve(%Plug.Conn{remote_ip: remote_ip}) do
+    remote_ip
+    |> Tuple.to_list()
+    |> Enum.join(".")
   end
 end
